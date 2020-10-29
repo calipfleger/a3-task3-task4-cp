@@ -1,0 +1,110 @@
+---
+title: "a3-task3-task4"
+author: "Cali Pfleger"
+date: "10/28/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+library(janitor)
+library(kableExtra)
+library(lubridate)
+```
+
+## Read in urchins data 
+
+```{r}
+urchins <- read_csv(here("data", "urchins.csv")) %>% 
+  clean_names() 
+```
+
+
+## Section 1: Exploratory Data Vizualization
+- i: Size comparsison between purple and red urchins using data from all sites and both treatments shown by histogram 
+
+
+```{r}
+urchins_size <-urchins %>% 
+  filter(common_name %in% c("Red Urchin", "Purple Urchin")) 
+  ggplot(data = urchins_size, aes(x = size)) +
+  geom_histogram(bins= 15) +
+  facet_wrap(~common_name)
+```
+
+
+
+## Section 1: Exploratory Data Vizualization
+i: Size comparison between purple and red urchins using data from all sites and both treatments shown by boxplot
+
+```{r}
+urchins_size <-urchins %>% 
+  filter(common_name %in% c("Red Urchin", "Purple Urchin")) 
+  ggplot(data = urchins_size) +
+    geom_boxplot(aes(x= common_name, y= size))
+  
+```
+
+
+## Section 1: Descriptive Statistics Table
+
+ii: Summary table for purple and red urchins -> mean, median, SD, and sample size 
+
+
+```{r}
+urchins_stats <- urchins %>% 
+  group_by(common_name) %>% 
+  summarise(mean_urchins =mean (size),
+            median_urchins = median(size),
+            sd_urchins = sd(size),
+            n = n()) #calculate number of observations in each group )
+
+kbl(urchins_stats)
+```
+
+
+## Section 1: Overall takeaways
+
+- Purple urchins are more 
+
+
+
+
+## Section 2:Explore purple urchin counts by site and year
+- i 
+```{r}
+purple_urchins <- urchins %>% 
+  filter(common_name %in% c("Purple Urchin")) %>% 
+  mutate(date= mdy(date)) %>% 
+  mutate(year = year(date)) %>%  #new column that only has year 
+  mutate(site_full = case_when(
+    site %in% c("NAPL") ~ "Naples Reef",
+    site %in% c("AQUE") ~ "Arroyo Quemado Reef",
+    site %in% c("CARP") ~ "Carpinteria Reef",
+    site %in% c("MOHK") ~ "Mohawk Reef",
+    site %in% c("IVEE") ~ "Isla Vista Reef"
+    
+  ))
+ 
+```
+
+
+## Section 2:Explore purple urchin counts by site and year
+- ii make a summary table with the total # of purple urchins observed by site and year 
+
+```{r}
+
+```
+
+
+
+
+
+
+
+
+
+
+
