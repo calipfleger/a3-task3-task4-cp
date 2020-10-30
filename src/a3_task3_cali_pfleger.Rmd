@@ -12,6 +12,7 @@ library(here)
 library(janitor)
 library(kableExtra)
 library(lubridate)
+library(data.table)
 ```
 
 ## Read in urchins data 
@@ -84,18 +85,26 @@ purple_urchins <- urchins %>%
     site %in% c("AQUE") ~ "Arroyo Quemado Reef",
     site %in% c("CARP") ~ "Carpinteria Reef",
     site %in% c("MOHK") ~ "Mohawk Reef",
-    site %in% c("IVEE") ~ "Isla Vista Reef"
-    
-  ))
+    site %in% c("IVEE") ~ "Isla Vista Reef"))
+ 
  
 ```
 
 
-## Section 2:Explore purple urchin counts by site and year
+## Section 2:Explore purple urchin counts by site and year & make graph 
 - ii make a summary table with the total # of purple urchins observed by site and year 
 
-```{r}
+- iii counts of purple urchins recorded at each site over time for the years included in the study
 
+```{r}
+purple_urchins_stats <- purple_urchins %>% 
+   count(site_full, year) %>% 
+   group_by(site_full) 
+
+ggplot(data = purple_urchins_stats, aes(x= year, y= n )) +
+  geom_jitter(aes(color=site_full, shape= site_full)) +
+  labs(title= "Purple Urchin Counts", x= "Year", y= "Counts")+
+  theme(legend.title=element_blank())
 ```
 
 
