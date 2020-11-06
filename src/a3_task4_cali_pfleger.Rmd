@@ -1,0 +1,94 @@
+---
+title: "a3_task4_cali_pfleger"
+author: "Cali Pfleger"
+date: "10/30/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+library(janitor)
+library(kableExtra)
+library(lubridate)
+library(car)
+```
+
+
+```{r}
+urchins <- read_csv(here("data", "urchins.csv")) %>% 
+  clean_names() 
+```
+
+## a) Wrangle Urchin data to only include Purple Urchin Data from January (1) 2010
+```{r}
+urchins_2010 <-urchins %>% 
+  filter(common_name %in% c("Purple Urchin")) %>% 
+  filter(site %in% c("NAPL")) %>% 
+   mutate(date= mdy(date)) %>% 
+  mutate(year = year(date)) %>% 
+  filter(year == 2010) %>% 
+  mutate(month= month(date)) %>% 
+  filter(month == 1)
+
+
+```
+
+
+## b) Mean group_by(treatment) %>% 
+  
+```{r}
+urchins_2010 %>% 
+  ggplot(aes(x = size)) +
+  geom_histogram(bins = 15) +
+  facet_wrap(~treatment)
+
+urchins_2010 %>% 
+  ggplot(aes(sample = size)) +
+  geom_qq() +
+  facet_wrap(~treatment)
+```
+## b) Main takeaways
+- I do no think that there is a large variance in the difference in sizes between the annual and control groups. 
+
+##  c) Create a table of desciptive stats
+
+```{r}
+urchins_stats <- urchins_2010 %>% 
+  group_by(treatment) %>% 
+  summarise(mean_urchins =mean (size),
+            median_urchins = median(size),
+            sd_urchins = sd(size),
+            n = n()) #calculate number of observations in each group )
+
+kbl(urchins_stats)
+```
+
+## d) Two-sample t-test to compare means between the two groups
+
+```{r}
+annual_urchins <- urchins_2010 %>% 
+  filter(treatment == ("ANNUAL")) %>% 
+  pull(size)
+
+control_urchins <- urchins_2010 %>% 
+  filter(treatment == ("CONTROL")) %>% 
+  pull(size)
+
+
+t.test(x= annual_urchins, y= control_urchins)
+
+```
+## e) Comparing the means statement 
+-  The mean of the annual urchin data is 3.92 and the mean of the control urchin data is 3.73, which is a difference in 0.190864. The calculated standard deviation (sd) for the annual urchins is .~9 and the sd for the control urchins is ~8.6, which is about 1/3 of the mean size for both groups. 
+
+The p-value of 0.2536 means that there is a 25% chance that these data could have been randomly sampled.
+
+## f) The Meaning of the p-value from the t-test above
+
+- The two sample t-test between annual and control urchins in January 2010 resulted in a p-value of 0.2536 which means that there is a ~25% chance that the difference between the size of the two groups is due to random collection error. 
+
+
+
+
